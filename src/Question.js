@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 
 export default function Question(props) {
- 
-  const styles = {
-    backgroundColor: props.isHeld ? "salmon" : "",
-  };
+    const [checkID, setCheckID] = useState()
+    const [checkTrue, setCheckTrue] = useState(false)
+  /* const styles = {
+    backgroundColor: checkID ===  ? "salmon" : "",
+  }; */
 
   const answersMap = props.answers.map((answer) => {
+    const styles = {
+        backgroundColor: checkID === answer.id ? "salmon" : "",
+      }
     return (
       <button
         style={styles}
@@ -19,16 +23,8 @@ export default function Question(props) {
   });
 
   function handleID(id){
-    
-  console.log(props.answers)
-    props.answers.map(answered => {
-        answered.id = props.answers.id ? {
-            ...answered,
-            isSelected: !answered.isSelected 
-        } : answered
-    })
+    setCheckID(id)
   }
-
   return (
     <div className="question-wrap">
       <div>
