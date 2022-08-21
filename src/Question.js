@@ -13,7 +13,7 @@ export default function Question(props) {
         backgroundColor: checkID === answer.id ? "#D6DBF5" : "",
       }
     const stylesAfterSubmit = {
-      backgroundColor: /* if submitted */checkID === answer.id ? "green" : answer.isCorrect ? "salmon" : "",
+      backgroundColor: /* if submitted */checkID === answer.id ? "#94D7A2" : answer.isCorrect ? "salmon" : "",
     }
       // logici devam ettir
 /*     const submittedStyles = {

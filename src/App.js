@@ -9,18 +9,20 @@ function App() {
   const [quizPage, setQuizPage] = useState(false);
   const [trigger, setTrigger] = useState(0);
   const [questionData, setQuestionData] = useState();
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [correctAnswers, setCorrectAnswers] = useState(0)
+  const questionCount = 5;
   let questionMap;
 
   useEffect(() => {
     axios
       .get("https://opentdb.com/api.php?amount=5&category=14&difficulty=easy&type=multiple")
       .then((response) => setData(response.data.results));
-  }, []);
+  }, [quizPage]);
   useEffect(() => {
     RearrangedData();
      // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [data, quizPage]);
 
   function RearrangedData() {
     const newRearrangedData = [];
@@ -83,7 +85,8 @@ function App() {
   }
 
   function renderQuiz() {
-    setQuizPage(true);
+    setQuizPage(prevQuiz => !prevQuiz);
+    setIsSubmitted(false)
   }
 
   const handleSubmit = () => {
@@ -97,9 +100,11 @@ function App() {
   return (
     <div>
       {quizPage ? (
-        <div>
+        <div className="wrap-quiz">
           {questionMap}
-          <button onClick={handleSubmit}>Submit Answers</button>      
+          {isSubmitted ? <p>You scored {correctAnswers} / {questionCount} correct answers</p> : ""}
+          
+          <button className="submit-button" onClick={isSubmitted ? renderQuiz : handleSubmit}>{isSubmitted ? "Play Again" : "Submit Answers"}</button>      
         </div>
       ) : (
         <StartPage showGame={renderQuiz} />
