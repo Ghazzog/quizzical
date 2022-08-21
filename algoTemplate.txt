@@ -1,0 +1,9 @@
+selected answer style background = green
+
+
+correct answer === selected answer ?
+styles : correct answer style background = red
+
+for each 
+correct answer === selected answer 
+setCorrectAnswerCount(count => count + 1)
