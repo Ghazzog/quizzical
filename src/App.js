@@ -7,27 +7,29 @@ import { nanoid } from "nanoid";
 function App() {
   const [data, setData] = useState({});
   const [quizPage, setQuizPage] = useState(false);
-  const [trigger, setTrigger] = useState(0);
   const [questionData, setQuestionData] = useState();
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [correctAnswers, setCorrectAnswers] = useState(0)
+  const [correctAnswers, setCorrectAnswers] = useState([])
   const questionCount = 5;
+  const incorrectBackground = { backgroundColor: "salmon" };
   let questionMap;
 
   useEffect(() => {
     axios
-      .get("https://opentdb.com/api.php?amount=5&category=14&difficulty=easy&type=multiple")
+      .get(
+        "https://opentdb.com/api.php?amount=5&category=14&difficulty=easy&type=multiple"
+      )
       .then((response) => setData(response.data.results));
   }, [quizPage]);
   useEffect(() => {
     RearrangedData();
-     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, quizPage]);
 
   function RearrangedData() {
     const newRearrangedData = [];
     for (let i = 0; i < data.length; i++) {
-     // data[i].incorrect_answers.push(data[i].correct_answer);
+      // data[i].incorrect_answers.push(data[i].correct_answer);
       newRearrangedData.push({
         question: data[i].question,
         answers: [
@@ -53,22 +55,27 @@ function App() {
           },
         ],
       });
-      console.log(newRearrangedData)
+      setCorrectAnswers(prevAnsw => [...prevAnsw, data[i].correct_answer])
+      correctAnswers.splice(-4)
       shuffle(newRearrangedData[i].answers);
-      console.log(newRearrangedData)
+      setQuestionData(newRearrangedData)
     }
-    
-    setQuestionData(newRearrangedData);
   }
-
+  
+  console.log(correctAnswers) //correct answers ile selected answers karşılaştırılacak
   if (questionData) {
     questionMap = questionData.map((ques, index) => {
       return (
-        <Question key={index} question={ques.question} answers={ques.answers} submit={isSubmitted}/>
+        <Question
+          key={index}
+          question={ques.question}
+          answers={ques.answers}
+          submit={isSubmitted}
+          correct={correctAnswers}
+        />
       );
     });
   }
-  
 
   function shuffle(array) {
     let currentIndex = array.length,
@@ -85,15 +92,15 @@ function App() {
   }
 
   function renderQuiz() {
-    setQuizPage(prevQuiz => !prevQuiz);
-    setIsSubmitted(false)
+    setQuizPage((prevQuiz) => !prevQuiz);
+    setIsSubmitted(false);
   }
 
   const handleSubmit = () => {
-    setIsSubmitted(true)
-  }
+    setIsSubmitted(true);
+  };
 
-/*   function newGame() {
+  /*   function newGame() {
     setTrigger((prevTrigger) => trigger + 1);
     console.log("NewGame Clicked");
   } */
@@ -102,9 +109,18 @@ function App() {
       {quizPage ? (
         <div className="wrap-quiz">
           {questionMap}
-          {isSubmitted ? <p>You scored {correctAnswers} / {questionCount} correct answers</p> : ""}
-          
-          <button className="submit-button" onClick={isSubmitted ? renderQuiz : handleSubmit}>{isSubmitted ? "Play Again" : "Submit Answers"}</button>      
+          {isSubmitted ? (
+            <p>You scored / {questionCount} correct answers</p>
+          ) : (
+            ""
+          )}
+
+          <button
+            className="submit-button"
+            onClick={isSubmitted ? renderQuiz : handleSubmit}
+          >
+            {isSubmitted ? "Play Again" : "Submit Answers"}
+          </button>
         </div>
       ) : (
         <StartPage showGame={renderQuiz} />
